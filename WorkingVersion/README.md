@@ -1,7 +1,7 @@
 # Tasks Working Now
 
 ## Jan 29 2016
-- [ ] 1. Tried Mayavi GUI
+- [x] 1. Tried Mayavi GUI
 - [ ] 2. Managed the former code with a better interface.
 
 ## Jan 28 2016

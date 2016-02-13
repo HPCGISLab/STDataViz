@@ -1,5 +1,6 @@
 # Tips for programming python
 [Python Data Structure Tutorial](https://docs.python.org/2/tutorial/datastructures.html)
+
 1. Use **xrange()** instead of range() for looping over large amount of data
 2. **List Comprehension**
 ```python

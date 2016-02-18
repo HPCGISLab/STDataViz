@@ -86,7 +86,7 @@ def changeVolumeColormap(vol,color):
     from tvtk.util.ctf import ColorTransferFunction
     ctf = ColorTransferFunction()
     for c in color:
-        ctf.add_rgb_point(c[0], c[1]/255.0, c[2]/255.0, c[3]/255.0)
+        ctf.add_rgb_point(float(c[0]), float(c[1])/255.0, float(c[2])/255.0, float(c[3])/255.0)
     vol._volume_property.set_color(ctf)
     vol._ctf = ctf
     vol.update_ctf = True
@@ -95,7 +95,7 @@ def changeVolumeColormap(vol,color):
     from enthought.tvtk.util.ctf import PiecewiseFunction
     otf = PiecewiseFunction()
     for c in color:
-        otf.add_point(c[0], c[4]/255.0)
+        otf.add_point(float(c[0]), float(c[4])/255.0)
     vol._otf = otf
     vol._volume_property.set_scalar_opacity(otf)
     
@@ -192,7 +192,7 @@ def changeToBestView(mlab):
 
 def readColorFile(filename):
     f = open(filename, "r")
-    return [ [float(x) for x in lines.split(' ')] for lines in f ]
+    return [ [int(x) for x in lines.split(' ')] for lines in f ]
 
 def main():
     fileDir='./ascfiles2'

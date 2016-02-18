@@ -17,6 +17,6 @@
   [1, 2, 3, 4, 5, 6, 7, 8, 9]
 ```
 ```python
-  f = open(r"temp.txt")
-  [[c for c in line] for line in f]
+  >>>f = open(r"temp.txt")
+  >>>[[c for c in line] for line in f]
 ```

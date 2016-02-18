@@ -2,6 +2,9 @@
 ##########
 *~
 
+# Python
+*.pyc
+
 # Compiled source #
 ###################
 *.com

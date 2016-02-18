@@ -1,5 +1,5 @@
 # 3D Volume Graph using Mayavi
-# 2015-09-09
+# 2016/02/18
 # By Jay and Cheng
 # This program reads ascfiles from 'filedir', creates 3d matrix,
 # uses mayavi display the 3d matrix, and also saves a screenshot in 
@@ -13,10 +13,9 @@ import numpy as np
 from mayavi import mlab
 import pylab as pl
 
-filedir='/Users/czhang/Desktop/Mayavi/ascfiles2/'
-
-# read meta data from the first 6 line of the asc file
-def metadataforfile(filename):
+def metadataforfile(filename,filedir):
+    '''read meta data from the first 6 line of the asc file
+    '''
     metadata=[None]*6
     nrows=ncols=None
     x=y=None
@@ -50,38 +49,38 @@ def metadataforfile(filename):
     fileinput.close()
     return metadata
 
-# read data from one file
-def filedataforfile(filenum):
-    filename=filedir+"tmp_kdeout"+str(filenum)+".asc"
-    nparr=np.loadtxt(filename, skiprows=6)
-    return nparr
 
-# load all the data from files and return 3d matrix
-def loadData():
+def loadData(fileDir):
+    '''load all the data from files from one directory
+    Parameters
+    ----------
+    fileDir : str
+        Directory of the data files
+    
+    Returns
+    -------
+    3d np arry   
+    '''
     x = []
-    onlyfiles = [ f for f in listdir(filedir) if isfile(join(filedir,f)) ]
-    zlength=len(onlyfiles)
-    for i in xrange(zlength):
-        filedat=filedataforfile(i)
-        x.append(filedat)
+    files = [join(fileDir,f) for f in listdir(fileDir) if isfile(join(fileDir,f)) ]
+    for f in files:
+        x.append(np.loadtxt(f,skiprows=6) )
+        
     y=np.dstack(x)
+
     print "3d shape", y.shape
     return y  
 
-# change the ctf and otf property of volume
-def change_volume_property(vol):
-    color1 = [[0,0,0,0,0],
-    [1,255,255,0,10],
-    [10,255,255,0,50],
-    [100,255,100,0,150],
-    [1000,255,0,0,255]]
-    color2 = [[0,0,0,0,0],
-    [100,0,255,255,10],
-    [1000,0,255,255,50],
-    [10000,0,100,255,150],
-    [100000,0,0,255,255]]
-    
-    color = color2
+
+def changeVolumeColormap(vol,color):
+    '''change the ctf and otf property of volume
+    Parameters
+    ----------
+    vol : mlab.volume
+    color : [[]]
+        For each color [datavalue, R, G, B, A]
+        R,G,B,A in range(0.0,255.0) inclusive
+    '''
     
     # Changing the ctf:
     from tvtk.util.ctf import ColorTransferFunction
@@ -93,7 +92,6 @@ def change_volume_property(vol):
     vol.update_ctf = True
 
     # Changing the otf
-    
     from enthought.tvtk.util.ctf import PiecewiseFunction
     otf = PiecewiseFunction()
     for c in color:
@@ -102,7 +100,9 @@ def change_volume_property(vol):
     vol._volume_property.set_scalar_opacity(otf)
     
     
-def change_test(vol):
+def changeTest(vol):
+    ''' Test for vol change
+    '''
     from enthought.tvtk.util.ctf import PiecewiseFunction
     otf = PiecewiseFunction()
     otf.add_point(0, 0)
@@ -110,8 +110,17 @@ def change_test(vol):
     vol._otf = otf
     vol._volume_property.set_scalar_opacity(otf)
     
-# draw volume
-def draw_volume(scalars):
+def drawVolume(mlab,scalars):
+    ''' 3d Visualization of the data
+    Parameters
+    ----------
+    mlab : mlab
+    scalars : 3d np array
+    
+    Returns
+    -------
+    volume object
+    '''
     # filts out low data
     nmax = np.amax(scalars)
     nmin = np.amin(scalars)
@@ -119,20 +128,16 @@ def draw_volume(scalars):
     #lowBound = nmin + nptp*0
     #for i in np.nditer(scalars, op_flags=['readwrite']):
     #    if i<lowBound: i[...] = 0
-        
+    
     # Get the shape of axes
     shape = scalars.shape
     
     # draw
-    fig = mlab.figure(bgcolor=(0,0,0), size=(800,800) )
     src = mlab.pipeline.scalar_field(scalars)
     src.update_image_data = True
     #src.spacing = [1, 1, 1]
     
     vol = mlab.pipeline.volume(src)
-    
-    change_volume_property(vol)
-    #change_test(vol)
     
     #vol = mlab.pipeline.image_plane_widget(src,plane_orientation='z_axes', slice_index=shape[2]/2)
     ax = mlab.axes(nb_labels=5, ranges=(0,shape[0],0,shape[1],0,shape[2]))
@@ -140,16 +145,29 @@ def draw_volume(scalars):
     mlab.savefig("result.jpg")
     print "nmax =", nmax
     print "nmin =", nmin
-    
     viewkeeper = mlab.view()
     print "View", mlab.view()
-    draw_map(shape[0],shape[1])
     mlab.view(viewkeeper[0],viewkeeper[1],viewkeeper[2],viewkeeper[3])
+    return vol
     
-def draw_map(height,width):
-    im = pl.imread('./maps/worldmap_Miller_cylindrical_projection.png', format='png')
-    im = pl.imread('./maps/worldmap.png', format='png')
-    #im = pl.imread('./maps/worldmap2.png', format='png')
+def drawMap(mlab, scalars, mapFile):
+    ''' 3d Visualization of the data
+    Parameters
+    ----------
+    mlab : mlab
+    scalars : 3d np array
+    mapFile : str
+    
+    Returns
+    -------
+    imshow object
+    '''
+    # Get the shape of axes
+    shape = scalars.shape
+    height = shape[0]
+    width = shape[1]
+    
+    im = pl.imread(mapFile, format = 'png')
     
     l = []
     for i in im:
@@ -159,18 +177,48 @@ def draw_map(height,width):
             for k in j: tmp += k
             x.append(tmp)
         l.append(x)
-    print im
-    ims = mlab.imshow(l, colormap = 'binary')
+        
+    #ims = mlab.imshow(l, colormap = 'binary')
+    ims = mlab.imshow(l)
     print "Map shape", len(l),len(l[0])
     
     ims.actor.position = [height/2,(width)/2,0]
     ims.actor.scale = [float(height)/len(l),float(width)/len(l[0]),0]
+    
+    return ims
 
+def changeToBestView(mlab):
+    mlab.view(45.0, 54.735610317245346, 1477.5179822379857, [ 147. ,  352.5,   38. ])
+
+def readColorFile(filename):
+    f = open(filename, "r")
+    return [ [float(x) for x in lines.split(' ')] for lines in f ]
 
 def main():
-    import pylab as pl
-    s = loadData()
-    draw_volume(s)
+    fileDir='./ascfiles2'
+    mapFile = './maps/worldmap.png'
+    colorFile = './colormaps/color1.txt'
+
+    # color map used for test
+    color1 = [[0,0,0,0,0],
+        [1,255,255,0,10],
+        [10,255,255,0,50],
+        [100,255,100,0,150],
+        [1000,255,0,0,255]]
+    
+    color2 = [[0,0,0,0,0],
+        [100,0,255,255,10],
+        [1000,0,255,255,50],
+        [10000,0,100,255,150],
+        [100000,0,0,255,255]]
+
+    s = loadData(fileDir)
+    mlab.figure(bgcolor=(0,0,0), size=(800,800) )
+    vol = drawVolume(mlab,s)
+    colormap = readColorFile(colorFile)
+    changeVolumeColormap(vol,colormap)
+    drawMap(mlab, s, mapFile)
+    changeToBestView(mlab)
     
 if __name__ == "__main__":
     main()

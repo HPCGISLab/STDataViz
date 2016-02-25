@@ -6,7 +6,7 @@ from traitsui.api import View, Item, HSplit, Group, VSplit
 from mayavi.core.ui.api import MayaviScene, MlabSceneModel, SceneEditor
 from mayavi.core.api import PipelineBase
 from enthought.traits.ui.menu import NoButtons
-from traitsui.api import TableEditor
+from traitsui.api import TableEditor, ObjectColumn, TableColumn
 
 from draw_volume import loadData, drawVolume, changeVolumeColormap, \
         drawMap, readColorFile, changeToBestView
@@ -16,6 +16,8 @@ from time import time
 def_dataDir = "./ascfiles2"
 def_mapFile = "./maps/worldmap.png"
 def_colorFile = "./colormaps/color1.txt" 
+
+    
 
 class ControlPanel(HasTraits):
     dataDir = Directory(value = def_dataDir, exist = True)
@@ -40,7 +42,10 @@ class ControlPanel(HasTraits):
                             Item('runButton', show_label=False),
                             label = 'Setting', dock='tab'),
                         Group(
-                            Item('colormap',show_label=False,editor = TableEditor()),
+                            Item('colormap',show_label=False,
+                                editor = TableEditor(
+                                    columns=[TableColumn(),
+                                    TableColumn()]) ),
                             Item('colorButton', show_label=False),
                             label = 'Colormap', dock='tab'),
                         layout = 'tabbed'
@@ -135,7 +140,7 @@ class STDataViz(HasTraits):
     scene = Instance(MlabSceneModel, args=( )  )
     # Control Panel
     panel = Instance(ControlPanel)
-    # Sync wiht Control Panel
+    # Sync with Control Panel
     volume = Instance(PipelineBase)
     
     def _panel_default(self):

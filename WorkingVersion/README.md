@@ -1,7 +1,7 @@
 # Tasks Working Now
 
 ## Feb 25 2016
-- [x] 0. Create breach BetterGUI
+- [x] 0. Create breach BetterGUI for a try seperated from origin
 - [ ] 1. Abstract class Vis3D from draw_volume.py for easy modification for the visualization
 - [ ] 2. Add file time to Vis3D's private to track t
 

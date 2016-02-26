@@ -17,19 +17,15 @@ def_dataDir = "./ascfiles2"
 def_mapFile = "./maps/worldmap.png"
 def_colorFile = "./colormaps/color1.txt" 
 
-    
 
 class ControlPanel(HasTraits):
-    dataDir = Instance(Directory)
-    #dataDir = Directory(value = viz.dataDir, exist = True)
+    viz = Instance(Viz3D)
+    dataDir = Directory(value = viz.dataDir, exist = True)
     #mapFile = File(value = viz.mapFile,exist = True, filter=["*.png"])
     #colorFile = File(value = viz.colorFile, exist = True)
     runButton = Button("Run")
     
     alphaTable = List()
-    
-    def _dataDir_default(self):
-        return Directory(value = self.viz.dataDir, exist = True)
     
     view = View(Group(Group(Item('dataDir',style='simple'),
                     #Item('mapFile', style='simple'),
@@ -51,9 +47,11 @@ class STDataViz(HasTraits):
     # Control Panel
     panel = Instance(ControlPanel)
     # Log Panel
-    log = GUILog("STDataViz (Last Modify: 02/25/2016)")
+    log = value = GUILog("STDataViz (Last Modify: 02/25/2016)")
     # Viz3D
-    viz = Viz3D(scene.mlab, log)
+    viz = Instance(Viz3D)
+    def _viz_default(self):
+        return Viz3D(self.scene.mlab, self.log)
     
     def _panel_default(self):
         return ControlPanel(viz = self.viz,scene = self.scene, log=self.log)

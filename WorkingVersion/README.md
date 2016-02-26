@@ -4,7 +4,7 @@
 - [x] 0. Create breach BetterGUI for a try seperated from origin
 - [x] 1. Abstract class Vis3D from draw_volume.py for easy modification for the visualization
 - [x] 2. Add file time to Vis3D's private to track t
-- [ ] 3. Modify STDataViz.py for a clear struction.
+- [x] 3. Modify STDataViz.py for a clear struction.
 
 ## Feb 18 2016
 - [x] 1. Research for GUI using Traits (Mayavi Default GUI).

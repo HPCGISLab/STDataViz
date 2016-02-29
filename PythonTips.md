@@ -20,3 +20,13 @@
   >>>f = open(r"temp.txt")
   >>>[[c for c in line] for line in f]
 ```
+
+3. ```inspect```, an easy way to look at interface of functions
+```
+  >>> import re
+  >>> import inspect
+  >>> print inspect.getsource(re.compile)
+  def compile(pattern, flags=0):
+      "Compile a regular expression pattern, returning a pattern object."
+      return _compile(pattern, flags)
+```

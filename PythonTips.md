@@ -21,7 +21,7 @@
   >>>[[c for c in line] for line in f]
 ```
 
-3. ```inspect```, an easy way to look at interface of functions
+3.```inspect```, an easy way to look at interface of functions
 ```
   >>> import re
   >>> import inspect
